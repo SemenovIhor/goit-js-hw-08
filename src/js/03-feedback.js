@@ -33,14 +33,13 @@ function onTextareaInput(evt) {
 let formElements = refs.form.elements;
 
 const populateForm = () => {
-  if (localStorage.key(STORAGE_KEY)) {
+  if (localStorage.getItem(STORAGE_KEY)) {
     const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY));
     for (const element of formElements) {
       if (element.name in savedData) {
         element.value = savedData[element.name];
       }
     }
-    const message = "Form has been refilled with saved data!";
   }
 };
 document.onload = populateForm();
