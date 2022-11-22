@@ -3,15 +3,21 @@ import throttle from 'lodash.throttle';
 // sem@gmail.com
 const STORAGE_KEY = 'feedback-form-state';
 
-const formData = {}
 
-const refs = {
-  form: document.querySelector('.feedback-form'),
-}
+const filterForm = document.querySelector('.feedback-form');
+const selectedFilters = {};
 
-refs.form.addEventListener('submit', onFormSubmit);
-refs.form.addEventListener('input', throttle(onTextareaInput, 500));
+initForm();
 
+filterForm.addEventListener('input', throttle(e => {
+  e.preventDefault();
+  const formData = new FormData(filterForm);
+  selectedFilters[e.target.name] = e.target.value;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedFilters));
+}, 500));
+
+
+filterForm.addEventListener('submit', onFormSubmit);
 
 function onFormSubmit(evt) {
   evt.preventDefault();
@@ -19,24 +25,14 @@ function onFormSubmit(evt) {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-function onTextareaInput(evt) {
-  formData[evt.target.name] = evt.target.value;
-  console.log(formData);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
-}
 
-let formElements = refs.form.elements;
-
-const getData = localStorage.getItem(STORAGE_KEY);
-
-const populateForm = () => {
-  if (getData) {
-    const savedData = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    for (const element of formElements) {
-      if (element.name in savedData) {
-        element.value = savedData[element.name];
-      }
-    }
+function initForm() {
+  let persistedFilters = localStorage.getItem(STORAGE_KEY);
+  if (persistedFilters) {
+    persistedFilters = JSON.parse(persistedFilters)
+    Object.entries(persistedFilters).forEach(([name, value]) => {
+      selectedFilters[name] = value;
+      filterForm.elements[name].value = value;
+    });
   }
 };
-document.onload = populateForm();
