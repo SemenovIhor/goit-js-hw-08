@@ -5,12 +5,11 @@ const STORAGE_KEY = 'feedback-form-state';
 
 
 const filterForm = document.querySelector('.feedback-form');
-const selectedFilters = {};
+let selectedFilters = {};
 
 initForm();
 
 filterForm.addEventListener('input', throttle(e => {
-  e.preventDefault();
   const formData = new FormData(filterForm);
   selectedFilters[e.target.name] = e.target.value;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedFilters));
@@ -23,6 +22,7 @@ function onFormSubmit(evt) {
   evt.preventDefault();
   evt.currentTarget.reset();
   localStorage.removeItem(STORAGE_KEY);
+  selectedFilters = {}; 
 }
 
 
